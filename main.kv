@@ -1,0 +1,379 @@
+#:import utils kivy.utils
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
+
+
+<LogIn_TextInput@TextInput>:
+    font_size: 17
+    size_hint_y: None
+    height: 40
+    multiline: False
+
+<LogIn_Buttons@Button>:
+    size_hint_y: None
+    height: 40
+    font_size: 17
+    background_color: utils.get_color_from_hex('#737778')
+    background_normal: ''
+    background_down: ''
+    on_state: self.background_color = {'normal': utils.get_color_from_hex('#737778'), 'down': utils.get_color_from_hex('#EEEE00')} [self.state]
+
+<HyperLinkButtons@Button>:
+    color: utils.get_color_from_hex('#4876FF')
+    background_color: (0, 0, 0, 0)
+    on_press: self.color =  utils.get_color_from_hex('#FFFF00')
+    on_release: self.color = utils.get_color_from_hex('#4876FF')
+
+<EmployeeInfoLabel@Label>:
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+    font_size: 20
+
+<ServiceButton@Button>:
+    canvas.before:
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [25]
+    on_release:
+        app.root.ids.screen_manager.transition.direction = 'left'
+
+<BackButton@Button>:
+    text: u"\u00AB"
+    font_size: 50
+    size_hint: (None, None)
+    size: (70, 70)
+    pos_hint: {'top': 1}
+    background_color: (1, 0, 0, 0)
+    on_press: self.color = utils.get_color_from_hex('#FF356C')
+    on_release:
+        app.root.ids.screen_manager.transition.direction = 'right'
+        self.color = (3, 3, 3, 1)
+
+<Profile_Button_Label_Config@Label>:
+    color: (0, 0, 0, 1)
+    font_size: 17
+    text_size: self.size
+    valign: 'middle'
+    size: self.texture_size
+    halign: 'center'
+
+<Profile_Button> :
+    size_hint_y: None
+    height: 80
+    padding: 10
+    background_color: (0, 0, 0, 0)
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        Image:
+            source: 'Resources/dummy-person.png'
+            size_hint_x: .3
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Profile_Button_Label_Config:
+                text: root.label_1
+            Profile_Button_Label_Config:
+                text: root.label_2
+
+<FileChooserPopup>:
+    title: 'choose your photo'
+    size_hint_y: .5
+
+    BoxLayout:
+        orientarion: 'vertical'
+        FileChooserIconView:
+            filters: ['*.png', '*.jpg', '*.jpeg']
+            show_hidden: True
+            on_selection: root.dismiss()
+            auto_dismiss: True
+            on_selection: app.root.selected(self.selection)
+
+<Box>:
+    screen_manager: screen_manager
+    ScreenManager:
+        id: screen_manager
+
+        LogIn_Screen:
+            id: login_screen
+            name: 'login_screen'
+
+        ProfileScreen:
+            id: profile_screen
+            name: 'profile_screen'
+
+        ChatScreen:
+            id: chat_screen
+            name: 'chat_screen'
+
+        ChattingScreen:
+            id: chatting_screen
+            name: 'chatting_screen'
+
+        VideoMeet:
+            id: video_meet
+            name: 'video_meeting'
+            
+<LogIn_Screen>:
+
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'Resources/login_screen_bg.png'
+
+    BoxLayout:
+        size_hint: (.5, .25)
+        pos_hint: {'center_x':.5, 'top': .83}
+        orientation: 'vertical'
+        spacing: 7
+
+        Image:
+            source: 'Resources/company_logo.png'
+
+        Label:
+            text: 'NEXGEN'
+            font_size: 23
+            text_size: self.size
+            halign: 'center'
+            valign: 'top'
+
+    BoxLayout:
+        size_hint: (.7, .6)
+        pos_hint: {'center_x': .5}
+        orientation: 'vertical'
+        spacing: 15
+
+        LogIn_TextInput:
+            id: emp_id_txtip
+            hint_text: 'Your Id *'
+
+        LogIn_TextInput:
+            id: emp_id_password
+            hint_text: 'Password'
+
+        Button:
+            opacity: 0
+            size_hint_y: None
+            height: 10
+
+        LogIn_Buttons:
+            text: 'LogIn with Password'
+            on_release:
+                app.root.password_authentication(emp_id_txtip.text, emp_id_password.text)
+
+        LogIn_Buttons:
+            text: 'LogIn With Face'
+            on_press: self.text = 'Processing...'
+            on_release:
+                app.root.face_authentication()
+                self.text = 'LogIn With Face'
+
+        BoxLayout:
+            HyperLinkButtons:
+                text: 'Request SignUp'
+
+            HyperLinkButtons:
+                text: 'Policies'
+
+        HyperLinkButtons:
+            text: 'www.nexgen.corp'
+
+
+<ProfileScreen>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'Resources/profile screen bg.png'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: .2, .1
+        pos_hint: {'top': .98, 'center_x': .9}
+
+        Image:
+            source: 'Resources/company_logo.png'
+
+        Label:
+            text: 'Nexgen'
+            text_size: self.size
+            halign: 'center'
+            valign: 'top'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: (.7, .18)
+        pos_hint: {'top': .95, 'x': .09}
+
+        EmployeeInfoLabel:
+            id: employee_id_label
+            font_size: 30
+
+        EmployeeInfoLabel:
+            id: employee_name_label
+            valign: 'bottom'
+
+        EmployeeInfoLabel:
+            id: employee_designation_label
+
+        EmployeeInfoLabel:
+            id: employee_email_label
+            valign: 'top'
+
+    Button:
+        id: img
+        size_hint: (.35, .2)
+        pos_hint: {'x': .09, 'top': .7}
+        #background_color: (0,0,0,0)
+        background_normal : 'Resources/dummy-person.png'
+        on_release: app.profile_screen.open_fileChooser_popup()
+
+
+    GridLayout:
+        cols: 3
+        size_hint: (.8, .4)
+        spacing: 10
+        pos_hint: {'center_x': .5, 'y': .07}
+
+        ServiceButton:
+            background_normal: 'Resources/chat_normal.png'
+            background_down: 'Resources/chat_down.png'
+            on_release:
+                app.root.ids.screen_manager.current = 'chat_screen'
+
+        ServiceButton:
+            background_normal: 'Resources/video_meet_normal.png'
+            background_down: 'Resources/video_meet_down.png'
+            on_release:
+                #app.root.ids.screen_manager.current = 'video_meet_screen'
+
+        ServiceButton:
+            background_normal: 'Resources/target_normal.png'
+            background_down: 'Resources/target_down.png'
+            on_release:
+                #app.root.ids.screen_manager.current = 'target_screen'
+
+        ServiceButton:
+            background_normal: 'Resources/attendance_normal.png'
+            background_down: 'Resources/attendance_down.png'
+            on_release:
+                #app.root.ids.screen_manager.current = 'attendance_screen'
+
+        ServiceButton:
+            background_normal: 'Resources/salary_normal.png'
+            background_down: 'Resources/salary_down.png'
+            on_release:
+                #app.root.ids.screen_manager.current = 'salary_screen'
+
+        ServiceButton:
+            background_normal: 'Resources/events_normal.png'
+            background_down: 'Resources/events_down.png'
+            on_release:
+                #app.root.ids.screen_manager.current = 'event_screen'
+
+
+<ChatScreen>:
+    employee_chats: employee_chats
+
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'Resources/chat_screen_bg.png'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: .2, .1
+        pos_hint: {'top': .98, 'center_x': .9}
+
+        Image:
+            source: 'Resources/company_logo.png'
+
+        Label:
+            text: 'Nexgen'
+            text_size: self.size
+            halign: 'center'
+            valign: 'top'
+
+
+    BackButton:
+        on_release: root.parent.current = 'profile_screen'
+
+    Button:
+        text: 'Chats'
+        background_color: (1, 0, 0, 0)
+        font_size: 20
+        on_press: self.color = utils.get_color_from_hex('#FF356C')
+        on_release: self.color = (3, 3, 3, 1)
+        size_hint_y: .05
+        pos_hint: {'top': .83}
+
+    ScrollView:
+        size_hint_y:.781
+        BoxLayout:
+            id: employee_chats
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+
+<ChattingScreen>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'Resources/chat_screen_bg.png'
+
+    BackButton:
+        on_release:
+            root.parent.current = 'chat_screen'
+            root.parent.transition.direction = 'right'
+
+    BoxLayout:
+        size_hint:(.5, .15)
+        pos_hint: {'center_x':.5, 'top': 0.93}
+        orientation: 'vertical'
+
+        Label:
+            id: emp_id
+            font_size: 30
+
+        Label:
+            id: emp_name
+            font_size: 20
+
+    ScrollView:
+        id:msg_scrollview
+        size_hint_y: .7
+        pos_hint: {'y':.08}
+        BoxLayout:
+            id: messages
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+
+    BoxLayout:
+        size_hint_y: .075
+        padding: 10
+        spacing: 10
+
+        TextInput:
+            id: msg_txtip
+            multiline: False
+
+        Button:
+            text: 'Send'
+            size_hint_x: .4
+            on_release:
+                root.send_message(msg_txtip.text)
+                msg_txtip.text = ''
+
+<VideoMeet>:
+    Button:
+        text: 'ad'
+
